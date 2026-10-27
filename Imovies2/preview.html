@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumina Screens — Next-Gen Cinema & Seat Reservation (Direct Preview)</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+
+      --bg-deep: #080c14;
+      --bg-surface: #0f1623;
+      --bg-surface-elevated: #162032;
+      --bg-card: rgba(15, 22, 35, 0.78);
+      --border-subtle: rgba(148, 163, 184, 0.12);
+      --border-highlight: rgba(16, 185, 129, 0.4);
+
+      --emerald-primary: #10b981;
+      --emerald-hover: #059669;
+      --emerald-light: #34d399;
+      --emerald-dim: rgba(16, 185, 129, 0.12);
+
+      --ice-cyan: #38bdf8;
+      --amber-gold: #f59e0b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 90% 15%, rgba(56, 189, 248, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(15, 23, 42, 0.9) 0%, transparent 70%);
+      background-attachment: fixed;
+    }
+
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 700; color: #fff; }
+    a { color: inherit; text-decoration: none; }
+
+    /* Layout Containers */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .glass-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 22px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      outline: none;
+    }
+    .btn-lumina {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+    }
+    .btn-lumina:hover {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      color: #042f1a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.45);
+    }
+    .btn-lumina-outline {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+    .btn-lumina-outline:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--emerald-primary);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .btn-sm { padding: 6px 14px; font-size: 0.82rem; border-radius: 8px; }
+
+    /* Top Preview Control Bar */
+    .preview-mode-bar {
+      background: rgba(15, 22, 35, 0.95);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .mode-tab-group {
+      display: flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+    .mode-tab {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-tab.active {
+      background: var(--emerald-primary);
+      color: #042f1a;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Navbar */
+    .lumina-nav {
+      background: rgba(8, 12, 20, 0.85);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 0;
+    }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+    .logo-container { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-text { font-family: var(--font-heading); font-size: 1.45rem; font-weight: 800; letter-spacing: -0.4px; }
+    .logo-text span:first-child { color: #fff; }
+    .logo-text span:last-child { color: var(--emerald-primary); margin-left: 4px; }
+
+    /* Hero Banner */
+    .hero-banner {
+      min-height: 72vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      background-size: cover;
+      background-position: center top;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 60px 0;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, #080c14 25%, rgba(8, 12, 20, 0.88) 60%, rgba(8, 12, 20, 0.4) 100%);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+    }
+    .badge-spotlight {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--emerald-light);
+    }
+    .badge-rating {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--amber-gold);
+    }
+
+    /* Movie Grid & Cards */
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .movie-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .movie-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--border-highlight);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(16, 185, 129, 0.3);
+    }
+    .poster-box {
+      width: 100%; padding-top: 140%; position: relative; overflow: hidden; background: #131b2e;
+    }
+    .poster-box img {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .movie-card:hover .poster-box img { transform: scale(1.07); }
+    .card-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+
+    /* Curved Cinema Screen */
+    .cinema-screen-container { perspective: 500px; margin-bottom: 35px; text-align: center; }
+    .cinema-screen {
+      height: 14px;
+      background: linear-gradient(to bottom, #ffffff, rgba(52, 211, 153, 0.4));
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.45);
+      transform: rotateX(-12deg);
+      margin: 0 auto;
+      width: 72%;
+    }
+    .cinema-screen-glow {
+      height: 60px;
+      background: radial-gradient(ellipse at center top, rgba(16, 185, 129, 0.22) 0%, transparent 70%);
+      width: 82%; margin: 0 auto; filter: blur(8px);
+    }
+
+    /* Seat Grid Elements */
+    .seat-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px;
+    }
+    .seat-box {
+      width: 36px; height: 34px; border-radius: 8px 8px 4px 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-family: var(--font-mono); font-weight: 600;
+      user-select: none; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .seat-box.available {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1.5px solid rgba(16, 185, 129, 0.45);
+      color: #34d399;
+    }
+    .seat-box.available:hover {
+      transform: translateY(-3px) scale(1.15);
+      background: var(--emerald-primary);
+      color: #042f1a;
+      box-shadow: 0 0 16px var(--emerald-primary);
+    }
+    .seat-box.selected {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      transform: translateY(-2px) scale(1.1);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
+      border: 1.5px solid #a7f3d0;
+    }
+    .seat-box.locked {
+      background: rgba(245, 158, 11, 0.18);
+      border: 1.5px solid rgba(245, 158, 11, 0.6);
+      color: #fbbf24;
+      cursor: not-allowed;
+    }
+    .seat-box.booked {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: #64748b;
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    /* Boarding Pass Ticket */
+    .ticket-card {
+      background: linear-gradient(145deg, #121a2c 0%, #0b111e 100%);
+      border: 1.5px solid rgba(16, 185, 129, 0.25);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.1);
+      padding: 36px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .ticket-card::before, .ticket-card::after {
+      content: '';
+      position: absolute;
+      width: 32px; height: 32px;
+      background-color: var(--bg-deep);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .ticket-card::before { left: -16px; }
+    .ticket-card::after { right: -16px; }
+
+    /* Floating Dock */
+    .booking-dock {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      width: calc(100% - 40px); max-width: 900px;
+      background: rgba(8, 12, 20, 0.94);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 20px; padding: 14px 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(16, 185, 129, 0.2);
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 100;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); }
+    td { padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 0.88rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Preview Switcher Bar -->
+  <div class="preview-mode-bar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-weight: 800; font-family: var(--font-heading); color: #fff; font-size: 0.95rem;">
+        ⚡ LUMINA SCREENS LIVE PREVIEW
+      </span>
+      <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: var(--emerald-light); font-size: 0.72rem; padding: 2px 8px; border-radius: 20px; font-weight: 700;">
+        NORDIC SLATE & EMERALD
+      </span>
+    </div>
+
+    <!-- View Switcher Tabs -->
+    <div class="mode-tab-group">
+      <button class="mode-tab active" onclick="switchView('home')">🎬 Now Showing</button>
+      <button class="mode-tab" onclick="switchView('seats')">💺 Seat Selection</button>
+      <button class="mode-tab" onclick="switchView('checkout')">💳 Checkout & Timer</button>
+      <button class="mode-tab" onclick="switchView('ticket')">🎫 Digital Ticket</button>
+      <button class="mode-tab" onclick="switchView('admin')">🛡️ Operator Console</button>
+    </div>
+  </div>
+
+  <!-- Lumina Floating Navbar -->
+  <header class="lumina-nav">
+    <div class="container nav-inner">
+      <div class="logo-container" onclick="switchView('home')">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 6.5C4 5.1 5.1 4 6.5 4H17.5C18.9 4 20 5.1 20 6.5V14.5C20 15.9 18.9 17 17.5 17H6.5C5.1 17 4 15.9 4 14.5V6.5Z"/><polygon points="10,8 16,11 10,14" fill="#fff"/><path d="M8 20L16 20" stroke="#d1fae5" stroke-width="2.2"/></svg>
+        </div>
+        <div class="logo-text">
+          <span>LUMINA</span><span>SCREENS</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="display: inline-flex; align-items: center; gap: 5px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); color: var(--emerald-light); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
+          📍 Mumbai NCR
+        </div>
+        <button class="btn btn-lumina-outline btn-sm" onclick="switchView('admin')">Operator Center</button>
+        <button class="btn btn-lumina btn-sm" onclick="switchView('seats')">Quick Reserve</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- VIEW 1: HOME / NOW SHOWING -->
+  <div id="view-home" class="page-view" style="display: block;">
+    <!-- Hero Spotlight Section -->
+    <section class="hero-banner" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1600&auto=format&fit=crop');">
+      <div class="hero-overlay"></div>
+      <div class="container" style="position: relative; z-index: 2;">
+        <div style="max-width: 680px;">
+          <div class="badge badge-spotlight" style="margin-bottom: 16px;">
+            ✦ LUMINA SPOTLIGHT PREMIERE
+          </div>
+          <h1 style="font-size: 3.4rem; font-weight: 900; line-height: 1.1; margin-bottom: 16px; letter-spacing: -1px;">
+            Dune: Part Two
+          </h1>
+          <p style="color: #cbd5e1; font-size: 1.05rem; line-height: 1.6; margin-bottom: 24px;">
+            Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family. Facing a choice between love and the fate of the universe.
+          </p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 30px;">
+            <span class="badge badge-rating">★ 8.8 / 10 Score</span>
+            <span class="badge" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #cbd5e1;">166 mins</span>
+            <span class="badge" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #cbd5e1;">English / Atmos</span>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); color: var(--emerald-light);">IMAX Laser 3D</span>
+          </div>
+
+          <div style="display: flex; gap: 14px;">
+            <button class="btn btn-lumina" onclick="switchView('seats')">
+              Reserve Seats Now ➔
+            </button>
+            <button class="btn btn-lumina-outline" onclick="alert('Playing preview trailer in IMAX format')">
+              ▶ Watch Preview
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Movies Grid Section -->
+    <section class="container" style="padding: 50px 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+        <div>
+          <span style="color: var(--emerald-light); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Currently in Theatres</span>
+          <h2 style="font-size: 1.9rem; margin-top: 4px;">Now Showing Lineup</h2>
+        </div>
+        <span style="color: var(--text-secondary); font-size: 0.88rem;">6 Feature Films Active</span>
+      </div>
+
+      <div class="movie-grid">
+        <!-- Movie 1 -->
+        <div class="movie-card">
+          <div class="poster-box">
+            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=800&auto=format&fit=crop" alt="Dune">
+            <span style="position: absolute; top: 10px; left: 10px; background: rgba(8,12,20,0.85); border: 1px solid rgba(16,185,129,0.4); color: var(--emerald-light); font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">IMAX LASER</span>
+            <span style="position: absolute; top: 10px; right: 10px; background: rgba(8,12,20,0.85); border: 1px solid rgba(245,158,11,0.4); color: var(--amber-gold); font-size: 0.78rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">★ 8.8</span>
+          </div>
+          <div class="card-content">
+            <div>
+              <h4 style="margin-bottom: 6px;">Dune: Part Two</h4>
+              <p style="color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 12px;">Sci-Fi, Adventure &bull; 166m</p>
+            </div>
+            <button class="btn btn-lumina" style="width: 100%;" onclick="switchView('seats')">Select Seats</button>
+          </div>
+        </div>
+
+        <!-- Movie 2 -->
+        <div class="movie-card">
+          <div class="poster-box">
+            <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800&auto=format&fit=crop" alt="Oppenheimer">
+            <span style="position: absolute; top: 10px; left: 10px; background: rgba(8,12,20,0.85); border: 1px solid rgba(16,185,129,0.4); color: var(--emerald-light); font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">DOLBY 4K</span>
+            <span style="position: absolute; top: 10px; right: 10px; background: rgba(8,12,20,0.85); border: 1px solid rgba(245,158,11,0.4); color: var(--amber-gold); font-size: 0.78rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">★ 8.9</span>
+          </div>
+          <div class="card-content">
+            <div>
+              <h4 style="margin-bottom: 6px;">Oppenheimer</h4>
+              <p style="color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 12px;">Biography, Drama &bull; 180m</p>
+            </div>
+            <button class="btn btn-lumina" style="width: 100%;" onclick="switchView('seats')">Select Seats</button>
+          </div>
+        </div>
+
+        <!-- Movie 3 -->
+        <div class="movie-card">
+          <div class="poster-box">
+            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop" alt="Interstellar">
+            <span style="position: absolute; top: 10px; left: 10px; background: rgba(8,12,20,0.85); border: 1px solid rgba(16,185,129,0.4); color: var(--emerald-light); font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">IMAX 70MM</span>
+            <span style="position: absolute; top: 10px; right: 10px; background: rgba(8,12,20,0.85); border: 1px solid rgba(245,158,11,0.4); color: var(--amber-gold); font-size: 0.78rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">★ 8.7</span>
+          </div>
+          <div class="card-content">
+            <div>
+              <h4 style="margin-bottom: 6px;">Interstellar (Re-issue)</h4>
+              <p style="color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 12px;">Sci-Fi, Adventure &bull; 169m</p>
+            </div>
+            <button class="btn btn-lumina" style="width: 100%;" onclick="switchView('seats')">Select Seats</button>
+          </div>
+        </div>
+
+        <!-- Movie 4 -->
+        <div class="movie-card">
+          <div class="poster-box">
+            <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800&auto=format&fit=crop" alt="Blade Runner">
+            <span style="position: absolute; top: 10px; left: 10px; background: rgba(8,12,20,0.85); border: 1px solid rgba(56,189,248,0.4); color: var(--ice-cyan); font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">4DX MOTION</span>
+            <span style="position: absolute; top: 10px; right: 10px; background: rgba(8,12,20,0.85); border: 1px solid rgba(245,158,11,0.4); color: var(--amber-gold); font-size: 0.78rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;">★ 8.0</span>
+          </div>
+          <div class="card-content">
+            <div>
+              <h4 style="margin-bottom: 6px;">Blade Runner 2049</h4>
+              <p style="color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 12px;">Cyberpunk, Thriller &bull; 164m</p>
+            </div>
+            <button class="btn btn-lumina" style="width: 100%;" onclick="switchView('seats')">Select Seats</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- VIEW 2: SEAT SELECTION -->
+  <div id="view-seats" class="page-view" style="display: none; padding: 40px 0 120px;">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+          <button class="btn btn-lumina-outline btn-sm" onclick="switchView('home')" style="margin-bottom: 8px;">
+            ← Back to Catalogue
+          </button>
+          <h2>Dune: Part Two &bull; IMAX Screen 1</h2>
+          <p style="color: var(--text-secondary); font-size: 0.88rem;">PVR ICON Phoenix Palladium &bull; Today, 07:30 PM</p>
+        </div>
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--emerald-light); padding: 8px 16px; border-radius: 20px; font-size: 0.82rem; font-weight: 600;">
+          ⚡ 5-Minute Atomic Concurrency Hold
+        </div>
+      </div>
+
+      <div class="glass-panel" style="padding: 40px 20px; text-align: center;">
+        <!-- Cinema Screen Curve -->
+        <div class="cinema-screen-container">
+          <div class="cinema-screen"></div>
+          <div class="cinema-screen-glow"></div>
+          <p style="font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-top: 8px;">
+            All Eyes Toward Projection &bull; Curved Laser Screen
+          </p>
+        </div>
+
+        <!-- Seating Categories & Rows -->
+        <div style="margin-bottom: 24px;">
+          <!-- Recliner Row -->
+          <div style="margin-bottom: 20px;">
+            <span class="badge" style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.35); color: var(--amber-gold); margin-bottom: 10px;">
+              🛋️ Lumina Recliner Lounge (₹450)
+            </span>
+            <div class="seat-row" style="gap: 16px;">
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700; width: 20px;">A</span>
+              <div class="seat-box available" data-id="A1" data-price="450" onclick="toggleSeat(this)">A1</div>
+              <div class="seat-box available" data-id="A2" data-price="450" onclick="toggleSeat(this)">A2</div>
+              <div class="seat-box booked" data-id="A3">A3</div>
+              <div class="seat-box booked" data-id="A4">A4</div>
+              <div class="seat-box available" data-id="A5" data-price="450" onclick="toggleSeat(this)">A5</div>
+              <div class="seat-box available" data-id="A6" data-price="450" onclick="toggleSeat(this)">A6</div>
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700; width: 20px;">A</span>
+            </div>
+          </div>
+
+          <!-- Prime Rows -->
+          <div style="margin-bottom: 20px;">
+            <span class="badge" style="background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.3); color: var(--ice-cyan); margin-bottom: 10px;">
+              ✨ Prime Club (₹280)
+            </span>
+            <div class="seat-row">
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700; width: 20px;">B</span>
+              <div class="seat-box available" data-id="B1" data-price="280" onclick="toggleSeat(this)">B1</div>
+              <div class="seat-box available" data-id="B2" data-price="280" onclick="toggleSeat(this)">B2</div>
+              <div class="seat-box available" data-id="B3" data-price="280" onclick="toggleSeat(this)">B3</div>
+              <div class="seat-box locked" data-id="B4">B4</div>
+              <div class="seat-box locked" data-id="B5">B5</div>
+              <div class="seat-box available" data-id="B6" data-price="280" onclick="toggleSeat(this)">B6</div>
+              <div class="seat-box available" data-id="B7" data-price="280" onclick="toggleSeat(this)">B7</div>
+              <div class="seat-box available" data-id="B8" data-price="280" onclick="toggleSeat(this)">B8</div>
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700; width: 20px;">B</span>
+            </div>
+            <div class="seat-row">
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700; width: 20px;">C</span>
+              <div class="seat-box available" data-id="C1" data-price="280" onclick="toggleSeat(this)">C1</div>
+              <div class="seat-box available" data-id="C2" data-price="280" onclick="toggleSeat(this)">C2</div>
+              <div class="seat-box available" data-id="C3" data-price="280" onclick="toggleSeat(this)">C3</div>
+              <div class="seat-box available" data-id="C4" data-price="280" onclick="toggleSeat(this)">C4</div>
+              <div class="seat-box available" data-id="C5" data-price="280" onclick="toggleSeat(this)">C5</div>
+              <div class="seat-box available" data-id="C6" data-price="280" onclick="toggleSeat(this)">C6</div>
+              <div class="seat-box available" data-id="C7" data-price="280" onclick="toggleSeat(this)">C7</div>
+              <div class="seat-box available" data-id="C8" data-price="280" onclick="toggleSeat(this)">C8</div>
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700; width: 20px;">C</span>
+            </div>
+          </div>
+
+          <!-- Classic Row -->
+          <div>
+            <span class="badge" style="background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); color: var(--emerald-light); margin-bottom: 10px;">
+              🎟️ Classic Gallery (₹180)
+            </span>
+            <div class="seat-row">
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700; width: 20px;">D</span>
+              <div class="seat-box available" data-id="D1" data-price="180" onclick="toggleSeat(this)">D1</div>
+              <div class="seat-box available" data-id="D2" data-price="180" onclick="toggleSeat(this)">D2</div>
+              <div class="seat-box booked" data-id="D3">D3</div>
+              <div class="seat-box booked" data-id="D4">D4</div>
+              <div class="seat-box booked" data-id="D5">D5</div>
+              <div class="seat-box available" data-id="D6" data-price="180" onclick="toggleSeat(this)">D6</div>
+              <div class="seat-box available" data-id="D7" data-price="180" onclick="toggleSeat(this)">D7</div>
+              <div class="seat-box available" data-id="D8" data-price="180" onclick="toggleSeat(this)">D8</div>
+              <span style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700; width: 20px;">D</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div style="display: inline-flex; gap: 20px; align-items: center; padding: 12px 24px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--border-subtle); font-size: 0.82rem; color: var(--text-secondary);">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div class="seat-box available" style="width: 18px; height: 18px; font-size: 0;"></div> Available
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div class="seat-box selected" style="width: 18px; height: 18px; font-size: 0;"></div> Selected
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div class="seat-box locked" style="width: 18px; height: 18px; font-size: 0;"></div> In Hold
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div class="seat-box booked" style="width: 18px; height: 18px; font-size: 0;"></div> Reserved
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Dock for Selection -->
+    <div id="booking-dock" class="booking-dock" style="display: none;">
+      <div>
+        <div style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 2px;">
+          Chosen Seats (<span id="dock-seat-count">0</span> / 8):
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div id="dock-seat-pills" style="display: flex; gap: 6px;"></div>
+          <span style="color: var(--text-muted);">&bull;</span>
+          <span style="color: #fff; font-weight: 800; font-size: 1.15rem; font-family: var(--font-mono);">
+            Total: ₹<span id="dock-seat-total">0</span>
+          </span>
+        </div>
+      </div>
+
+      <button class="btn btn-lumina" onclick="switchView('checkout')">
+        Proceed to Checkout ➔
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW 3: CHECKOUT & TIMER -->
+  <div id="view-checkout" class="page-view" style="display: none; padding: 50px 0;">
+    <div class="container" style="max-width: 900px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <button class="btn btn-lumina-outline btn-sm" onclick="switchView('seats')">
+          ← Return to Seat Selection
+        </button>
+        <div id="countdown-badge" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: var(--amber-gold); padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 0.88rem;">
+          ⏱ Hold Window: <span id="timer-display">04:48</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;">
+        <!-- Left Column: Summary -->
+        <div class="glass-panel" style="padding: 24px;">
+          <h4 style="margin-bottom: 20px;">Reservation Summary</h4>
+          <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400&auto=format&fit=crop" style="width: 75px; height: 105px; object-fit: cover; border-radius: 10px;">
+            <div>
+              <h5 style="margin-bottom: 4px;">Dune: Part Two</h5>
+              <p style="color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 6px;">PVR ICON &bull; IMAX Screen 1</p>
+              <p style="color: var(--emerald-light); font-size: 0.82rem; font-weight: 600;">Today &bull; 07:30 PM</p>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 8px;">
+              <span style="color: var(--text-secondary);">Allocated Seats</span>
+              <span id="checkout-seats" style="font-weight: 700; color: #fff;">B1, B2</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 8px;">
+              <span style="color: var(--text-secondary);">Base Fare</span>
+              <span>₹<span id="checkout-base">560</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 8px;">
+              <span style="color: var(--text-secondary);">Cinema GST & Facilities (5%)</span>
+              <span>₹<span id="checkout-gst">28</span></span>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 1.1rem; font-weight: 700;">Grand Total</span>
+            <span style="color: var(--emerald-light); font-size: 1.4rem; font-weight: 800; font-family: var(--font-mono);">
+              ₹<span id="checkout-grand">588</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Right Column: Mock Payment -->
+        <div class="glass-panel" style="padding: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h4>Secure Payment</h4>
+            <span class="badge" style="background: rgba(56,189,248,0.15); color: var(--ice-cyan); border: 1px solid rgba(56,189,248,0.3);">
+              Sandbox Mode
+            </span>
+          </div>
+
+          <form onsubmit="handleSimulatedPayment(event)">
+            <div style="margin-bottom: 14px;">
+              <label style="display: block; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 6px;">Cardholder Name</label>
+              <input type="text" value="Parv Khandelwal" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15,22,35,0.9); border: 1px solid var(--border-subtle); color: #fff;">
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label style="display: block; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 6px;">Card Number</label>
+              <input type="text" value="4242 •••• •••• 4242" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15,22,35,0.9); border: 1px solid var(--border-subtle); color: #fff;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+              <div>
+                <label style="display: block; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 6px;">Expiry</label>
+                <input type="text" value="12/28" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15,22,35,0.9); border: 1px solid var(--border-subtle); color: #fff;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 6px;">CVV</label>
+                <input type="password" value="888" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15,22,35,0.9); border: 1px solid var(--border-subtle); color: #fff;">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-lumina" style="width: 100%; padding: 14px;">
+              🔒 Authorize Payment (Instant QR Issuance)
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 4: DIGITAL BOARDING PASS TICKET -->
+  <div id="view-ticket" class="page-view" style="display: none; padding: 50px 0;">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: var(--emerald-primary); margin-bottom: 12px;">
+          ✓
+        </div>
+        <h2>Admission Confirmed!</h2>
+        <p style="color: var(--text-secondary); font-size: 0.88rem;">Your digital boarding pass is activated and turnstile-ready.</p>
+      </div>
+
+      <!-- Ticket Card -->
+      <div class="ticket-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #fff;">
+              LUMINA ADMISSION PASS
+            </span>
+          </div>
+          <span style="background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.4); color: var(--emerald-light); font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 6px;">
+            CONFIRMED
+          </span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: center;">
+          <div>
+            <h3 style="font-size: 1.6rem; margin-bottom: 6px;">Dune: Part Two</h3>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">English &bull; Sci-Fi, Adventure &bull; 166 mins</p>
+
+            <div style="margin-bottom: 16px;">
+              <div style="color: var(--amber-gold); font-size: 0.88rem; font-weight: 600;">
+                📍 PVR ICON Phoenix Palladium
+              </div>
+              <div style="color: var(--text-secondary); font-size: 0.78rem;">462 Senapati Bapat Marg, Lower Parel, Mumbai</div>
+            </div>
+
+            <div style="display: flex; gap: 24px; margin-bottom: 20px; font-size: 0.82rem;">
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.7rem;">SCREEN</span>
+                <strong style="color: #fff;">IMAX Laser 1</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.7rem;">DATE</span>
+                <strong style="color: #fff;">Today</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.7rem;">SHOWTIME</span>
+                <strong style="color: #fff;">07:30 PM</strong>
+              </div>
+            </div>
+
+            <div style="border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 14px; display: flex; gap: 30px; align-items: center;">
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.7rem; margin-bottom: 4px;">RESERVED SEATS</span>
+                <div id="ticket-seat-tags" style="display: flex; gap: 6px;">
+                  <span style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 0.82rem; font-weight: 700;">B1</span>
+                  <span style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 0.82rem; font-weight: 700;">B2</span>
+                </div>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.7rem;">TOTAL PAID</span>
+                <span style="color: var(--emerald-light); font-weight: 800; font-family: var(--font-mono); font-size: 1.15rem;">₹588</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- QR Code Area -->
+          <div style="text-align: center; border-left: 1px dashed rgba(255,255,255,0.15); padding-left: 20px;">
+            <div style="background: #fff; padding: 12px; border-radius: 12px; display: inline-block; margin-bottom: 8px;">
+              <!-- High-res QR representation -->
+              <svg width="120" height="120" viewBox="0 0 100 100" fill="#000">
+                <rect width="100" height="100" fill="#fff"/>
+                <path d="M10,10 h25 v25 h-25 z M15,15 v15 h15 v-15 z M19,19 h7 v7 h-7 z" fill="#000"/>
+                <path d="M65,10 h25 v25 h-25 z M70,15 v15 h15 v-15 z M74,19 h7 v7 h-7 z" fill="#000"/>
+                <path d="M10,65 h25 v25 h-25 z M15,70 v15 h15 v-15 z M19,74 h7 v7 h-7 z" fill="#000"/>
+                <rect x="42" y="12" width="6" height="12"/>
+                <rect x="52" y="16" width="6" height="8"/>
+                <rect x="42" y="30" width="16" height="6"/>
+                <rect x="12" y="42" width="10" height="6"/>
+                <rect x="28" y="42" width="6" height="14"/>
+                <rect x="40" y="42" width="20" height="20" fill="#10b981"/>
+                <rect x="66" y="42" width="8" height="6"/>
+                <rect x="78" y="42" width="12" height="6"/>
+                <rect x="66" y="54" width="24" height="6"/>
+                <rect x="42" y="68" width="8" height="14"/>
+                <rect x="56" y="68" width="12" height="6"/>
+                <rect x="74" y="68" width="14" height="20"/>
+                <rect x="56" y="80" width="12" height="8"/>
+              </svg>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-secondary);">Boarding Reference:</div>
+            <strong style="color: #fff; font-family: var(--font-mono); letter-spacing: 1px; font-size: 0.95rem;">LUM-9482-3810</strong>
+            <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">Present at optical turnstile</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 14px; margin-top: 30px;">
+        <button class="btn btn-lumina-outline" onclick="window.print()">
+          🖨️ Print Admission Pass
+        </button>
+        <button class="btn btn-lumina" onclick="switchView('home')">
+          Browse More Shows ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 5: OPERATOR / ADMIN CONSOLE -->
+  <div id="view-admin" class="page-view" style="display: none; padding: 40px 0;">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle);">
+        <div>
+          <h3>Multiplex Operations Console</h3>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">Gross telemetry, catalogue scheduler & atomic lock monitor</p>
+        </div>
+        <span class="badge" style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.35); color: var(--amber-gold);">
+          🛡️ OPERATOR ACCESS
+        </span>
+      </div>
+
+      <!-- Metrics Row -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div class="glass-panel" style="padding: 20px;">
+          <div style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Gross Box Office</div>
+          <div style="font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); color: #fff; margin: 4px 0;">₹4,28,450</div>
+          <span style="color: var(--emerald-light); font-size: 0.78rem;">↑ 18.4% vs last week</span>
+        </div>
+
+        <div class="glass-panel" style="padding: 20px;">
+          <div style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Tickets Reserved</div>
+          <div style="font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); color: #fff; margin: 4px 0;">1,420</div>
+          <span style="color: var(--ice-cyan); font-size: 0.78rem;">Zero double-booking conflicts</span>
+        </div>
+
+        <div class="glass-panel" style="padding: 20px;">
+          <div style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Screen Occupancy</div>
+          <div style="font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); color: #fff; margin: 4px 0;">87.2%</div>
+          <span style="color: var(--amber-gold); font-size: 0.78rem;">IMAX Halls Sold Out</span>
+        </div>
+
+        <div class="glass-panel" style="padding: 20px;">
+          <div style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Atomic Seat Locks</div>
+          <div style="font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); color: #fff; margin: 4px 0;">Active</div>
+          <span style="color: var(--emerald-light); font-size: 0.78rem;">5-min automatic release worker</span>
+        </div>
+      </div>
+
+      <!-- Recent Transactions Table -->
+      <div class="glass-panel" style="padding: 24px;">
+        <h4 style="margin-bottom: 16px;">Live Reservation Ledger</h4>
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>REFERENCE</th>
+                <th>FEATURE</th>
+                <th>THEATRE / SCREEN</th>
+                <th>SEATS</th>
+                <th>TOTAL</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family: var(--font-mono); font-weight: 700; color: #fff;">LUM-9482-3810</td>
+                <td style="color: #fff;">Dune: Part Two</td>
+                <td style="color: var(--text-secondary);">PVR Phoenix &bull; IMAX 1</td>
+                <td><span class="badge" style="background: rgba(16,185,129,0.15); color: var(--emerald-light);">B1, B2</span></td>
+                <td style="font-family: var(--font-mono); font-weight: 700; color: var(--emerald-light);">₹588</td>
+                <td><span style="color: var(--emerald-light); font-weight: 700;">CONFIRMED</span></td>
+              </tr>
+              <tr>
+                <td style="font-family: var(--font-mono); font-weight: 700; color: #fff;">LUM-8831-2941</td>
+                <td style="color: #fff;">Oppenheimer</td>
+                <td style="color: var(--text-secondary);">INOX Megaplex &bull; Dolby 4K</td>
+                <td><span class="badge" style="background: rgba(16,185,129,0.15); color: var(--emerald-light);">A3, A4</span></td>
+                <td style="font-family: var(--font-mono); font-weight: 700; color: var(--emerald-light);">₹945</td>
+                <td><span style="color: var(--emerald-light); font-weight: 700;">CONFIRMED</span></td>
+              </tr>
+              <tr>
+                <td style="font-family: var(--font-mono); font-weight: 700; color: #fff;">LUM-7721-1029</td>
+                <td style="color: #fff;">Interstellar</td>
+                <td style="color: var(--text-secondary);">Cinepolis Forum &bull; Screen 2</td>
+                <td><span class="badge" style="background: rgba(56,189,248,0.15); color: var(--ice-cyan);">C5, C6</span></td>
+                <td style="font-family: var(--font-mono); font-weight: 700; color: var(--emerald-light);">₹588</td>
+                <td><span style="color: var(--emerald-light); font-weight: 700;">CONFIRMED</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive JavaScript logic -->
+  <script>
+    let selectedSeats = ['B1', 'B2'];
+    let seatPrices = { 'B1': 280, 'B2': 280 };
+
+    function switchView(viewName) {
+      document.querySelectorAll('.page-view').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.mode-tab').forEach(el => el.classList.remove('active'));
+
+      const target = document.getElementById('view-' + viewName);
+      if (target) target.style.display = 'block';
+
+      // Update active tab button in control bar
+      const tabs = document.querySelectorAll('.mode-tab');
+      if (viewName === 'home') tabs[0]?.classList.add('active');
+      if (viewName === 'seats') tabs[1]?.classList.add('active');
+      if (viewName === 'checkout') tabs[2]?.classList.add('active');
+      if (viewName === 'ticket') tabs[3]?.classList.add('active');
+      if (viewName === 'admin') tabs[4]?.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleSeat(seatEl) {
+      if (seatEl.classList.contains('booked') || seatEl.classList.contains('locked')) return;
+
+      const seatId = seatEl.getAttribute('data-id');
+      const price = parseInt(seatEl.getAttribute('data-price') || '250', 10);
+
+      if (seatEl.classList.contains('selected')) {
+        seatEl.classList.remove('selected');
+        seatEl.classList.add('available');
+        selectedSeats = selectedSeats.filter(s => s !== seatId);
+        delete seatPrices[seatId];
+      } else {
+        if (selectedSeats.length >= 8) {
+          alert('You can select a maximum of 8 seats.');
+          return;
+        }
+        seatEl.classList.remove('available');
+        seatEl.classList.add('selected');
+        selectedSeats.push(seatId);
+        seatPrices[seatId] = price;
+      }
+
+      updateDock();
+    }
+
+    function updateDock() {
+      const dock = document.getElementById('booking-dock');
+      const countEl = document.getElementById('dock-seat-count');
+      const totalEl = document.getElementById('dock-seat-total');
+      const pillsEl = document.getElementById('dock-seat-pills');
+
+      if (selectedSeats.length === 0) {
+        dock.style.display = 'none';
+        return;
+      }
+
+      dock.style.display = 'flex';
+      countEl.innerText = selectedSeats.length;
+
+      const subtotal = selectedSeats.reduce((sum, s) => sum + (seatPrices[s] || 250), 0);
+      totalEl.innerText = subtotal.toLocaleString();
+
+      pillsEl.innerHTML = selectedSeats.map(s => `
+        <span style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 700;">
+          ${s}
+        </span>
+      `).join('');
+
+      // Update checkout page values
+      const gst = Math.round(subtotal * 0.05);
+      document.getElementById('checkout-seats').innerText = selectedSeats.join(', ');
+      document.getElementById('checkout-base').innerText = subtotal.toLocaleString();
+      document.getElementById('checkout-gst').innerText = gst.toLocaleString();
+      document.getElementById('checkout-grand').innerText = (subtotal + gst).toLocaleString();
+
+      // Update ticket seat tags
+      document.getElementById('ticket-seat-tags').innerHTML = selectedSeats.map(s => `
+        <span style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 0.82rem; font-weight: 700;">
+          ${s}
+        </span>
+      `).join('');
+    }
+
+    function handleSimulatedPayment(e) {
+      e.preventDefault();
+      try {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#10b981', '#34d399', '#38bdf8', '#fbbf24']
+        });
+      } catch (err) {}
+
+      switchView('ticket');
+    }
+
+    // Initialize initial default seats
+    document.querySelectorAll('.seat-box').forEach(seat => {
+      const id = seat.getAttribute('data-id');
+      if (selectedSeats.includes(id)) {
+        seat.classList.remove('available');
+        seat.classList.add('selected');
+      }
+    });
+    updateDock();
+  </script>
+</body>
+</html>

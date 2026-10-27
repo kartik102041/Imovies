@@ -1,0 +1,30 @@
+/* Lumina App-level Utility Enhancements */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow-emerald);
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.text-emerald-light {
+  color: var(--emerald-light) !important;
+}
+
+.bg-emerald-dim {
+  background-color: var(--emerald-dim) !important;
+}
+
+.border-emerald {
+  border-color: var(--border-highlight) !important;
+}
+
+.hover-white:hover {
+  color: #ffffff !important;
+}

@@ -1,0 +1,535 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+
+  /* Nordic Slate & Obsidian Palette */
+  --bg-deep: #080c14;
+  --bg-surface: #0f1623;
+  --bg-surface-elevated: #162032;
+  --bg-surface-high: #1e293b;
+  --bg-card: rgba(15, 22, 35, 0.78);
+  --border-subtle: rgba(148, 163, 184, 0.12);
+  --border-highlight: rgba(16, 185, 129, 0.4);
+
+  /* Nordic Emerald Accents */
+  --emerald-primary: #10b981;
+  --emerald-hover: #059669;
+  --emerald-light: #34d399;
+  --emerald-dim: rgba(16, 185, 129, 0.15);
+  --emerald-glow: 0 0 25px rgba(16, 185, 129, 0.35);
+
+  /* Secondary Accents */
+  --ice-cyan: #38bdf8;
+  --ice-dim: rgba(56, 189, 248, 0.15);
+  --amber-gold: #f59e0b;
+  --amber-dim: rgba(245, 158, 11, 0.15);
+
+  /* Backward Compatibility Variables */
+  --cinema-red: var(--emerald-primary);
+  --cinema-red-hover: var(--emerald-hover);
+  --cinema-gold: var(--amber-gold);
+  --cinema-blue: var(--ice-cyan);
+
+  /* Seat Status Palette */
+  --seat-available: #10b981;
+  --seat-available-border: rgba(16, 185, 129, 0.6);
+  --seat-booked: #334155;
+  --seat-locked: #f59e0b;
+  --seat-selected: #059669;
+
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --shadow-glow-emerald: 0 0 25px rgba(16, 185, 129, 0.3);
+  --shadow-glow-cyan: 0 0 25px rgba(56, 189, 248, 0.25);
+  --shadow-glow-amber: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-main);
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+  background-image: 
+    radial-gradient(circle at 10% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 90% 15%, rgba(56, 189, 248, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(15, 23, 42, 0.9) 0%, transparent 70%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.025em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+/* Glassmorphism Classes */
+.glass-panel,
+.lumina-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.glass-nav,
+.lumina-nav {
+  background: rgba(8, 12, 20, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Primary Lumina Buttons */
+.btn-cinema,
+.btn-lumina {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 10px 22px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cinema:hover,
+.btn-lumina:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  color: #042f1a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.45);
+}
+
+.btn-cinema-gold,
+.btn-lumina-gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  color: #080c14;
+  border: none;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 10px 22px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cinema-gold:hover,
+.btn-lumina-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+  color: #080c14;
+}
+
+.btn-cinema-outline,
+.btn-lumina-outline {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 9px 20px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cinema-outline:hover,
+.btn-lumina-outline:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--emerald-primary);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Secondary Button (Danger / Admin) */
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: none;
+  border-radius: 12px;
+}
+
+/* Movie Card */
+.movie-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.movie-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-highlight);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), var(--shadow-glow-emerald);
+}
+
+.movie-poster-container {
+  position: relative;
+  width: 100%;
+  padding-top: 145%;
+  overflow: hidden;
+  background-color: #131b2e;
+}
+
+.movie-poster-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.movie-card:hover .movie-poster-container img {
+  transform: scale(1.07);
+}
+
+.rating-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(8, 12, 20, 0.82);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: var(--amber-gold);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Format Pill Badge */
+.format-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(8, 12, 20, 0.82);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--emerald-light);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+/* Modern Seat Grid & Legend */
+.seat-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.seat-box {
+  width: 34px;
+  height: 32px;
+  border-radius: 8px 8px 4px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Nordic Seat State Specifications */
+.seat-box.available {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+}
+
+.seat-box.available:hover {
+  transform: translateY(-3px) scale(1.12);
+  background: var(--emerald-primary);
+  color: #042f1a;
+  box-shadow: 0 0 16px var(--emerald-primary);
+  border-color: #34d399;
+}
+
+.seat-box.selected {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
+  border: 1.5px solid #a7f3d0;
+}
+
+.seat-box.locked {
+  background: rgba(245, 158, 11, 0.18);
+  border: 1.5px solid rgba(245, 158, 11, 0.6);
+  color: #fbbf24;
+  cursor: not-allowed;
+  animation: pulse-locked 2s infinite ease-in-out;
+}
+
+.seat-box.booked {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+@keyframes pulse-locked {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.5; }
+}
+
+/* Minimalist Curved Cinema Screen */
+.cinema-screen-container {
+  perspective: 500px;
+  margin-bottom: 35px;
+  text-align: center;
+}
+
+.cinema-screen {
+  height: 14px;
+  background: linear-gradient(to bottom, #ffffff, rgba(52, 211, 153, 0.4));
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.45);
+  transform: rotateX(-12deg);
+  margin: 0 auto;
+  width: 72%;
+}
+
+.cinema-screen-glow {
+  height: 65px;
+  background: radial-gradient(ellipse at center top, rgba(16, 185, 129, 0.22) 0%, transparent 70%);
+  width: 82%;
+  margin: 0 auto;
+  filter: blur(8px);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--emerald-primary);
+}
+
+/* Nordic Form Controls */
+.form-control-cinema,
+.form-control-lumina {
+  background-color: rgba(15, 22, 35, 0.85) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  padding: 12px 18px !important;
+  font-size: 0.95rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.form-control-cinema:focus,
+.form-control-lumina:focus {
+  background-color: rgba(22, 32, 50, 0.95) !important;
+  border-color: var(--emerald-primary) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.form-select-cinema,
+.form-select-lumina {
+  background-color: rgba(15, 22, 35, 0.85) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  padding: 12px 18px !important;
+}
+
+.form-select-cinema:focus,
+.form-select-lumina:focus {
+  border-color: var(--emerald-primary) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+}
+
+.form-select-cinema option,
+.form-select-lumina option {
+  background-color: #0f1623;
+  color: #ffffff;
+}
+
+/* Digital Boarding Pass Ticket Styling */
+.ticket-card {
+  background: linear-gradient(145deg, #121a2c 0%, #0b111e 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.25);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.1);
+}
+
+.ticket-card::before, .ticket-card::after {
+  content: '';
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  background-color: var(--bg-deep);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.ticket-card::before { left: -17px; }
+.ticket-card::after { right: -17px; }
+
+/* Perforated Divider */
+.ticket-divider {
+  border-top: 2px dashed rgba(148, 163, 184, 0.2);
+  margin: 20px 0;
+  position: relative;
+}
+
+/* Filter Chip Pill */
+.filter-chip {
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.filter-chip:hover {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: var(--emerald-primary);
+  color: #ffffff;
+}
+
+.filter-chip.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  font-weight: 600;
+}
+
+/* Date Pill Button */
+.date-pill {
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 82px;
+  text-align: center;
+}
+
+.date-pill:hover {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: var(--emerald-primary);
+  color: #ffffff;
+}
+
+.date-pill.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+}
+
+/* Showtime Button Chip */
+.showtime-chip {
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.showtime-chip:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--emerald-primary);
+  color: #34d399;
+  transform: translateY(-1px);
+}
+
+/* Floating Bottom Booking Dock */
+.booking-dock {
+  position: sticky;
+  bottom: 24px;
+  z-index: 100;
+  background: rgba(15, 22, 35, 0.88);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  padding: 16px 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .seat-box {
+    width: 26px;
+    height: 26px;
+    font-size: 0.65rem;
+    border-radius: 6px 6px 3px 3px;
+  }
+}
